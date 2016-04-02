@@ -139,6 +139,23 @@ thread_tick (void)
   else
     kernel_ticks++;
 
+  struct list_elem *e;
+  for(e = list_begin (&sleep_list); e != list_end (&e) ; e = list_next (e))
+  {
+    struct thread *t = list_entry (e, struct thread, elem);
+    t->sleep_time--;
+  }
+
+  for(e = list_begin (&sleep_list); e != list_end (&e) ; e = list_next (e))
+  {
+    struct thread *t = list_entry (e, struct thread, elem);
+    if (t->sleep_time == 0)
+    {
+      thread_unblock (t);
+      list_remove (e);
+    }
+  }
+
   /* Enforce preemption. */
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
