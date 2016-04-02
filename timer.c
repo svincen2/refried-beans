@@ -93,7 +93,7 @@ timer_sleep (int64_t ticks)
   struct thread *t = thread_current ();
   t->sleep_ticks = ticks;
   sleep_list_add (t);
-  enum inter_level old_level = intr_disable ();
+  enum intr_level old_level = intr_disable ();
   thread_block ();
   intr_set_level (old_level);
 }

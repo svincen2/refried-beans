@@ -143,14 +143,14 @@ thread_tick (void)
   for(e = list_begin (&sleep_list); e != list_end (&sleep_list)
       ; e = list_next (e))
   {
-    struct thread *t = list_entry (e, struct thread, elem);
+    struct thread *t = list_entry (e, struct thread, sleepelem);
     t->sleep_ticks--;
   }
 
   for(e = list_begin (&sleep_list); e != list_end (&sleep_list)
       ; e = list_next (e))
   {
-    struct thread *t = list_entry (e, struct thread, elem);
+    struct thread *t = list_entry (e, struct thread, sleepelem);
     if (t->sleep_ticks == 0)
     {
       thread_unblock (t);
@@ -232,7 +232,7 @@ thread_create (const char *name, int priority,
 void
 sleep_list_add (struct thread *t)
 {
-  list_push_back (&sleep_list, &t->elem);
+  list_push_back (&sleep_list, &t->sleepelem);
 }
 
 /* Puts the current thread to sleep.  It will not be scheduled
