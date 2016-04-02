@@ -209,6 +209,13 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
+/* Puts the current thread in the sleep_list. Sets the initial sleep_ticks for the thread. */
+void
+sleep_list_add (struct thread *t)
+{
+  list_push_back (&sleep_list, &t->elem);
+}
+
 /* Puts the current thread to sleep.  It will not be scheduled
    again until awoken by thread_unblock().
 
