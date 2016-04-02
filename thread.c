@@ -140,13 +140,15 @@ thread_tick (void)
     kernel_ticks++;
 
   struct list_elem *e;
-  for(e = list_begin (&sleep_list); e != list_end (&e) ; e = list_next (e))
+  for(e = list_begin (&sleep_list); e != list_end (&sleep_list)
+      ; e = list_next (e))
   {
     struct thread *t = list_entry (e, struct thread, elem);
     t->sleep_ticks--;
   }
 
-  for(e = list_begin (&sleep_list); e != list_end (&e) ; e = list_next (e))
+  for(e = list_begin (&sleep_list); e != list_end (&sleep_list)
+      ; e = list_next (e))
   {
     struct thread *t = list_entry (e, struct thread, elem);
     if (t->sleep_ticks == 0)
