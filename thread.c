@@ -143,13 +143,13 @@ thread_tick (void)
   for(e = list_begin (&sleep_list); e != list_end (&e) ; e = list_next (e))
   {
     struct thread *t = list_entry (e, struct thread, elem);
-    t->sleep_tick--;
+    t->sleep_ticks--;
   }
 
   for(e = list_begin (&sleep_list); e != list_end (&e) ; e = list_next (e))
   {
     struct thread *t = list_entry (e, struct thread, elem);
-    if (t->sleep_tick == 0)
+    if (t->sleep_ticks == 0)
     {
       thread_unblock (t);
       list_remove (e);
