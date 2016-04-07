@@ -90,6 +90,7 @@ void
 timer_sleep (int64_t ticks) 
 {
   ASSERT (intr_get_level () == INTR_ON);
+  if (ticks <= 0) return;
   struct thread *t = thread_current ();
   t->sleep_ticks = ticks;
   sleep_list_add (t);

@@ -520,6 +520,8 @@ bool less_priority (const struct list_elem *a,
 {
   struct thread *t1 = list_entry (a, struct thread, elem);
   struct thread *t2 = list_entry (b, struct thread, elem);
+  ASSERT (t1 != NULL);
+  ASSERT (t2 != NULL);
   return t1->priority < t2->priority;
 }
 
