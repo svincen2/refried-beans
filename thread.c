@@ -514,13 +514,13 @@ alloc_frame (struct thread *t, size_t size)
 }
 
 /* Returns true iff a is greater or equal to b, false otherwise. */
-bool greater_priority (const struct list_elem *a,
+bool less_priority (const struct list_elem *a,
                       const struct list_elem *b,
                       void *aux)
 {
   struct thread *t1 = list_entry (a, struct thread, elem);
   struct thread *t2 = list_entry (b, struct thread, elem);
-  return t1->priority >= t2->priority;
+  return t1->priority < t2->priority;
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
@@ -535,7 +535,8 @@ next_thread_to_run (void)
     return idle_thread;
   else
   {
-    
+    list_sort(&ready_list, less_priority, 0);
+    return list_entry (list_pop_back (&ready_list), struct thread, elem);
   }
 //    return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
