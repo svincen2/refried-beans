@@ -78,7 +78,10 @@ static tid_t allocate_tid (void);
 /* */
 void donate (int priority, struct thread *t)
 {
-  list_push_front (&t->rec_priority, 
+  t->rec_priority_current++;
+  ASSERT (t->rec_priority_current < 8);
+  t->rec_priority[t->rec_priority_current] = t->priority;
+  t->priority = priority;
 }
 
 /* */
@@ -505,7 +508,7 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
-  t->donated = priority;
+  t->rec_priority_current = -1;
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
