@@ -390,7 +390,9 @@ thread_set_priority (int new_priority)
   struct thread *t = list_entry(e, struct thread, elem);
   if(t != thread_current ()){
     if (t->priority > new_priority){
+      enum intr_level old_level = intr_disable ();
       thread_block();
+      intr_set_level (old_level);
     }
   }
 }
