@@ -389,7 +389,7 @@ thread_set_priority (int new_priority)
   struct thread *t = list_entry (&ready_list, struct thread, e);
   if (t != thread_current ())
   {
-    if (t->priority > new_priority) thread_yield ();
+    if (t->priority > new_priority) thread_block ();
   }
 }
 
