@@ -243,7 +243,7 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
-
+  thread_yield_to_highest ();
   return tid;
 }
 
@@ -381,6 +381,21 @@ thread_foreach (thread_action_func *func, void *aux)
     }
 }
 
+/* Current thread yields if it's priority is not the highest. */
+void
+thread_yield_to_highest ()
+{
+  struct list_elem *e = list_max(&ready_list, less_priority, 0);
+  struct thread *t = list_entry(e, struct thread, elem);
+  if(t != thread_current ()){
+    if (t->priority > thread_current ()->priority){
+      enum intr_level old_level = intr_disable ();
+      thread_block ();
+      intr_set_level (old_level);
+    }
+  }
+}
+
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) 
@@ -391,7 +406,7 @@ thread_set_priority (int new_priority)
   if(t != thread_current ()){
     if (t->priority > new_priority){
       enum intr_level old_level = intr_disable ();
-      thread_block();
+      thread_block ();
       intr_set_level (old_level);
     }
   }
