@@ -87,7 +87,10 @@ void donate (int priority, struct thread *t)
 /* */
 void recall (void)
 {
-
+  struct thread *t = thread_current ();
+  if (t->rec_priority_current < 0) return;
+  t->priority = t->rec_priority[t->rec_priority_current];
+  t->rec_priority_current;
 }
 
 /* Initializes the threading system by transforming the code
