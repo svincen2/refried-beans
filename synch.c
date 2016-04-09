@@ -201,6 +201,7 @@ lock_acquire (struct lock *lock)
     if (thread_current ()->priority > lock->holder->priority)
     {
       // Donate our priority.
+      lock->holder->donated = thread_current ()->priority;
     }
   }
   lock->holder = thread_current ();
