@@ -81,7 +81,8 @@ void donate (int priority, struct thread *t)
   t->rec_priority_current++;
   ASSERT (t->rec_priority_current < 8);
   t->rec_priority[t->rec_priority_current] = t->priority;
-  t->priority = priority;
+  // t->priority = priority;
+  thread_set_priority(priority);
 }
 
 /* */
@@ -385,11 +386,12 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  struct list_elem *e = list_max (&ready_list, less_priority, NULL);
-  struct thread *t = list_entry (e, struct thread, elem);
-  if (t != thread_current ())
-  {
-    if (t->priority > new_priority) thread_block ();
+  struct list_elem *e = list_max(&ready_list, less_priority, 0);
+  struct thread *t = list_entry(e, struct thread, elem);
+  if(t != thread_current ()){
+    if (t->priority > new_priority){
+      thread_block();
+    }
   }
 }
 
@@ -498,8 +500,8 @@ running_thread (void)
 static bool
 is_thread (struct thread *t)
 {
-  printf ("Thread is null? %d\n", t == NULL);
-  printf ("Magic stepped on? %d\n", t->magic == THREAD_MAGIC);
+  // printf ("Thread is null? %d\n", t == NULL);
+  // printf ("Magic stepped on? %d\n", t->magic == THREAD_MAGIC);
   return t != NULL && t->magic == THREAD_MAGIC;
 }
 
