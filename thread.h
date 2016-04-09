@@ -92,7 +92,6 @@ struct thread
     struct list_elem allelem;           /* List element for all threads list. */
     struct list_elem sleepelem;         /* List element for sleep threads list. */
     int rec_priority[8];                /* Array of priorities waiting to be recalled. */
-    int rec_priority_size;		/* Size of the rec_priority array. */
     int rec_priority_current;           /* The current element to be recalled. */
 
     /* Shared between thread.c and synch.c. */
