@@ -75,6 +75,18 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
+/* */
+void donate (int priority, struct thread *t)
+{
+  list_push_front (&t->rec_priority, 
+}
+
+/* */
+void recall (void)
+{
+
+}
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
