@@ -88,10 +88,10 @@ struct thread
     char name[16];                      /* Name (for debugging purposes). */
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
-    int donated;                        /* Donated priority. */
     int sleep_ticks;                    /* Timer ticks remaining until woken up. */
     struct list_elem allelem;           /* List element for all threads list. */
     struct list_elem sleepelem;         /* List element for sleep threads list. */
+    struct list rec_priority;          /* List of priorities waiting to be recalled. */
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
@@ -142,5 +142,7 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 bool less_priority(const struct list_elem *a, const struct list_elem *b, void *aux);
+void donate(int priority, struct thread *t);
+void recall(void);
 
 #endif /* threads/thread.h */
