@@ -81,7 +81,6 @@ void donate (int priority, struct thread *t)
   t->rec_priority_current++;
   ASSERT (t->rec_priority_current < 8);
   t->rec_priority[t->rec_priority_current] = t->priority;
-  // t->priority = priority;
   thread_set_priority(priority);
 }
 
@@ -404,11 +403,9 @@ thread_set_priority (int new_priority)
   struct list_elem *e = list_max(&ready_list, less_priority, 0);
   struct thread *t = list_entry(e, struct thread, elem);
   if(t != thread_current ()){
-    if (t->priority > new_priority){
       enum intr_level old_level = intr_disable ();
       thread_block ();
       intr_set_level (old_level);
-    }
   }
   */
 }
