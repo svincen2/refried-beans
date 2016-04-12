@@ -85,13 +85,12 @@ void donate (int priority, struct thread *t)
   thread_set_priority(priority);
 }
 
-/* */
+/* Recall a previous priority. */
 void recall (void)
 {
   struct thread *t = thread_current ();
-  if (t->rec_priority_current < 0) return;
-  t->priority = t->rec_priority[t->rec_priority_current];
-  t->rec_priority_current;
+  ASSERT (t->rec_priority_current >= 0, "No priority to recall");
+  thread_set_priority (t->rec_priority[t->rec_priority_current--]);
 }
 
 /* Initializes the threading system by transforming the code
