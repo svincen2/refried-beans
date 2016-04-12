@@ -88,7 +88,7 @@ void donate (int priority, struct thread *t)
 void recall (void)
 {
   struct thread *t = thread_current ();
-  ASSERT (t->rec_priority_current >= 0, "No priority to recall");
+  if (t->rec_priority_current >= 0) return;
   thread_set_priority (t->rec_priority[t->rec_priority_current--]);
 }
 
