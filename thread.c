@@ -388,11 +388,9 @@ thread_yield_to_highest ()
   struct list_elem *e = list_max(&ready_list, less_priority, 0);
   struct thread *t = list_entry(e, struct thread, elem);
   if(t != thread_current ()){
-    if (t->priority > thread_current ()->priority){
       enum intr_level old_level = intr_disable ();
       thread_block ();
       intr_set_level (old_level);
-    }
   }
 }
 
@@ -401,7 +399,6 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  /*
   struct list_elem *e = list_max(&ready_list, less_priority, 0);
   struct thread *t = list_entry(e, struct thread, elem);
   if(t != thread_current ()){
@@ -409,7 +406,6 @@ thread_set_priority (int new_priority)
       thread_block ();
       intr_set_level (old_level);
   }
-  */
 }
 
 /* Returns the current thread's priority. */
