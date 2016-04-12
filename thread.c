@@ -83,7 +83,7 @@ void donate (int priority, struct thread *t)
   t->rec_priority_current++;
   ASSERT (t->rec_priority_current < 8);
   t->rec_priority[t->rec_priority_current] = t->priority;
-  thread_set_priority(priority);
+  t->priority = priority;
 }
 
 /* Recall a previous priority. */
