@@ -513,8 +513,8 @@ running_thread (void)
 static bool
 is_thread (struct thread *t)
 {
-  // printf ("Thread is null? %d\n", t == NULL);
-  // printf ("Magic stepped on? %d\n", t->magic == THREAD_MAGIC);
+  printf ("Thread is null? %d\n", t == NULL);
+  printf ("Magic stepped on? %d\n", t->magic == THREAD_MAGIC);
   return t != NULL && t->magic == THREAD_MAGIC;
 }
 
