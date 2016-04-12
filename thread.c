@@ -75,7 +75,9 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
-/* */
+/* Claim a donated priority, storing the threads previous priority
+   in rec_priority array.
+*/
 void donate (int priority, struct thread *t)
 {
   t->rec_priority_current++;
