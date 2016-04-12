@@ -381,7 +381,7 @@ thread_foreach (thread_action_func *func, void *aux)
     }
 }
 
-/* Current thread yields if it's priority is not the highest. */
+/* Current thread yields if it's priority is not the highest. *
 void
 thread_yield_to_highest ()
 {
@@ -393,6 +393,8 @@ thread_yield_to_highest ()
       intr_set_level (old_level);
   }
 }
+*/
+
 
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
@@ -404,9 +406,7 @@ thread_set_priority (int new_priority)
   if(t != thread_current ()){
     if (t->priority > thread_current ()->priority)
     {
-      enum intr_level old_level = intr_disable ();
-      thread_block ();
-      intr_set_level (old_level);
+      thread_yield ();
     }
   }
 }
