@@ -563,8 +563,8 @@ alloc_frame (struct thread *t, size_t size)
 
 /* Returns true iff a is greater or equal to b, false otherwise. */
 bool less_priority (const struct list_elem *a,
-                      const struct list_elem *b,
-                      void *aux)
+                    const struct list_elem *b,
+                    void *aux) UNUSED
 {
   struct thread *t1 = list_entry (a, struct thread, elem);
   struct thread *t2 = list_entry (b, struct thread, elem);
