@@ -75,6 +75,10 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
+bool less_priority (const struct list_elem *,
+                    const struct list_elem *,
+                    void *) UNUSED;
+static void preempt_if_priority_higher (struct thread *);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -233,8 +237,8 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
-/* Preempt the running thread if given thread's priority is higher. */
-void preempt_if_priority_higher (struct thread *t)
+static void 
+preempt_if_priority_higher (struct thread *t)
 {
   if (t->priority > thread_current ()->priority)
   {
@@ -530,7 +534,7 @@ alloc_frame (struct thread *t, size_t size)
 /* Returns true iff a is greater or equal to b, false otherwise. */
 bool less_priority (const struct list_elem *a,
                     const struct list_elem *b,
-                    void *aux) UNUSED
+                    void *aux UNUSED)
 {
   struct thread *t1 = list_entry (a, struct thread, elem);
   struct thread *t2 = list_entry (b, struct thread, elem);
