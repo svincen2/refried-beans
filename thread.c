@@ -77,7 +77,7 @@ static tid_t allocate_tid (void);
 
 /* Claim a donated priority, storing the threads previous priority
    in rec_priority array.
-*/
+
 void donate (int priority, struct thread *t)
 {
   t->rec_priority_current++;
@@ -85,14 +85,17 @@ void donate (int priority, struct thread *t)
   t->rec_priority[t->rec_priority_current] = t->priority;
   t->priority = priority;
 }
+*/
 
-/* Recall a previous priority. */
+/* Recall a previous priority. 
 void recall (void)
 {
   struct thread *t = thread_current ();
   if (t->rec_priority_current >= 0) return;
   thread_set_priority (t->rec_priority[t->rec_priority_current--]);
 }
+*/
+
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -401,14 +404,14 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  struct list_elem *e = list_max(&ready_list, less_priority, 0);
-  struct thread *t = list_entry(e, struct thread, elem);
-  if(t != thread_current ()){
-    if (t->priority > thread_current ()->priority)
-    {
-      thread_yield ();
-    }
-  }
+//  struct list_elem *e = list_max(&ready_list, less_priority, 0);
+//  struct thread *t = list_entry(e, struct thread, elem);
+//  if(t != thread_current ()){
+//    if (t->priority > thread_get_priority ())
+//    {
+//      thread_yield ();
+//    }
+//  }
 }
 
 /* Returns the current thread's priority. */
@@ -516,8 +519,8 @@ running_thread (void)
 static bool
 is_thread (struct thread *t)
 {
-  printf ("Thread is null? %d\n", t == NULL);
-  printf ("Magic stepped on? %d\n", t->magic == THREAD_MAGIC);
+//  printf ("Thread is null? %d\n", t == NULL);
+//  printf ("Magic stepped on? %d\n", t->magic == THREAD_MAGIC);
   return t != NULL && t->magic == THREAD_MAGIC;
 }
 
@@ -537,7 +540,7 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
-  t->rec_priority_current = -1;
+//  t->rec_priority_current = -1;
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
