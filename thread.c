@@ -149,6 +149,8 @@ thread_tick (void)
     t->sleep_ticks--;
   }
 
+  // Wake up all threads that have slept long enough,
+  // putting them on the ready_list.
   for(e = list_begin (&sleep_list); e != list_end (&sleep_list)
       ; e = list_next (e))
   {
@@ -226,7 +228,18 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
+
+  preempt_if_priority_higher (t);
   return tid;
+}
+
+/* Preempt the running thread if given thread's priority is higher. */
+void preempt_if_priority_higher (struct thread *t)
+{
+  if (t->priority > thread_current ()->priority)
+  {
+    thread_yield ();
+  }
 }
 
 /* Puts the current thread in the sleep_list. Sets the initial sleep_ticks for the thread. */
