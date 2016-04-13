@@ -91,8 +91,6 @@ struct thread
     int sleep_ticks;                    /* Timer ticks remaining until woken up. */
     struct list_elem allelem;           /* List element for all threads list. */
     struct list_elem sleepelem;         /* List element for sleep threads list. */
-//    int rec_priority[8];                /* Array of priorities waiting to be recalled. */
-//    int rec_priority_current;           /* The current element to be recalled. */
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
@@ -143,7 +141,5 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 bool less_priority(const struct list_elem *a, const struct list_elem *b, void *aux);
-//void donate(int priority, struct thread *t);
-//void recall(void);
 
 #endif /* threads/thread.h */

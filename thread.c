@@ -75,27 +75,6 @@ static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
 
-/* Claim a donated priority, storing the threads previous priority
-   in rec_priority array.
-
-void donate (int priority, struct thread *t)
-{
-  t->rec_priority_current++;
-  ASSERT (t->rec_priority_current < 8);
-  t->rec_priority[t->rec_priority_current] = t->priority;
-  t->priority = priority;
-}
-*/
-
-/* Recall a previous priority. 
-void recall (void)
-{
-  struct thread *t = thread_current ();
-  if (t->rec_priority_current >= 0) return;
-  thread_set_priority (t->rec_priority[t->rec_priority_current--]);
-}
-*/
-
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -161,6 +140,7 @@ thread_tick (void)
   else
     kernel_ticks++;
 
+  // Decrement sleeping threads' tick counts.
   struct list_elem *e;
   for(e = list_begin (&sleep_list); e != list_end (&sleep_list)
       ; e = list_next (e))
@@ -246,7 +226,6 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
-  // thread_yield_to_highest ();
   return tid;
 }
 
@@ -384,34 +363,11 @@ thread_foreach (thread_action_func *func, void *aux)
     }
 }
 
-/* Current thread yields if it's priority is not the highest. *
-void
-thread_yield_to_highest ()
-{
-  struct list_elem *e = list_max(&ready_list, less_priority, 0);
-  struct thread *t = list_entry(e, struct thread, elem);
-  if(t != thread_current ()){
-      enum intr_level old_level = intr_disable ();
-      thread_block ();
-      intr_set_level (old_level);
-  }
-}
-*/
-
-
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-//  struct list_elem *e = list_max(&ready_list, less_priority, 0);
-//  struct thread *t = list_entry(e, struct thread, elem);
-//  if(t != thread_current ()){
-//    if (t->priority > thread_get_priority ())
-//    {
-//      thread_yield ();
-//    }
-//  }
 }
 
 /* Returns the current thread's priority. */
@@ -519,8 +475,6 @@ running_thread (void)
 static bool
 is_thread (struct thread *t)
 {
-//  printf ("Thread is null? %d\n", t == NULL);
-//  printf ("Magic stepped on? %d\n", t->magic == THREAD_MAGIC);
   return t != NULL && t->magic == THREAD_MAGIC;
 }
 
@@ -540,7 +494,6 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
-//  t->rec_priority_current = -1;
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
@@ -588,7 +541,6 @@ next_thread_to_run (void)
     list_sort(&ready_list, less_priority, 0);
     return list_entry (list_pop_back (&ready_list), struct thread, elem);
   }
-//    return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
 
 /* Completes a thread switch by activating the new thread's page
