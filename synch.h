@@ -41,7 +41,7 @@ void cond_wait (struct condition *, struct lock *);
 void cond_signal (struct condition *, struct lock *);
 void cond_broadcast (struct condition *, struct lock *);
 
-void want_thread (struct lock *);
+void want_lock (struct lock *);
 
 /* Optimization barrier.
 

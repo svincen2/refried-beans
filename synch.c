@@ -200,9 +200,19 @@ lock_acquire (struct lock *lock)
   ASSERT (!lock_held_by_current_thread (lock));
 
   want_lock (lock);
-  sema_down (&lock->semaphore);
-  lock->holder = thread_current ();
+  // sema_down (&lock->semaphore);
+  // lock->holder = thread_current ();
 }
+
+/* If cannot acquire lock donates its priority to the lock holder */
+void
+want_lock (struct lock *lock){
+  if (!lock_try_acquire (lock)){
+    // Donate the priority to the lock holder
+    lock->holder->donated_pri = thread_get_priority ();
+  }
+}
+
 
 /* Tries to acquires LOCK and returns true if successful or false
    on failure.  The lock must not already be held by the current
