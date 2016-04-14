@@ -79,6 +79,7 @@ bool less_priority (const struct list_elem *,
                     const struct list_elem *,
                     void *) UNUSED;
 static void preempt_if_priority_higher (struct thread *);
+static bool is_highest_priority (void);
 
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
@@ -237,6 +238,9 @@ thread_create (const char *name, int priority,
   return tid;
 }
 
+/* Preempts the currently running thread if the given
+   thread's priority is higher.
+*/
 static void 
 preempt_if_priority_higher (struct thread *t)
 {
@@ -246,7 +250,9 @@ preempt_if_priority_higher (struct thread *t)
   }
 }
 
-/* Puts the current thread in the sleep_list. Sets the initial sleep_ticks for the thread. */
+/* Puts the current thread in the sleep_list.
+   Sets the initial sleep_ticks for the thread.
+*/
 void
 sleep_list_add (struct thread *t)
 {
@@ -385,6 +391,21 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
+  if (!is_highest_priority ())
+  {
+    thread_yield ();
+  }
+}
+
+/* Is the currently running thread still the highest
+   priority thread?
+*/
+static bool
+is_highest_priority ()
+{
+  struct list_elem *e = list_max (&ready_list, less_priority, NULL);
+  struct thread *t = list_entry (e, struct thread, elem);
+  return thread_current () == t;
 }
 
 /* Returns the current thread's priority. */
