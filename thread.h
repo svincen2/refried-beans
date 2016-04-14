@@ -145,6 +145,6 @@ int thread_get_load_avg (void);
 bool less_priority (const struct list_elem *,
                     const struct list_elem *,
                     void *) UNUSED;
-
+void want_lock (struct lock *lock);
 
 #endif /* threads/thread.h */

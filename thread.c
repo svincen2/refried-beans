@@ -663,6 +663,14 @@ allocate_tid (void)
   return tid;
 }
 
+void
+want_lock (struct lock *lock){
+  if (!lock_try_acquire (lock)){
+    // Donate the priority to the lock holder
+    lock->holder->donated_pri = thread_get_priority ();
+  }
+}
+
 /* Offset of `stack' member within `struct thread'.
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
