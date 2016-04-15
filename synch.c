@@ -210,6 +210,8 @@ want_lock (struct lock *lock){
   if (!lock_try_acquire (lock)){
     // Donate the priority to the lock holder
     lock->holder->donated_pri = thread_get_priority ();
+    sema_down (&lock->semaphore);
+    lock->holder = thread_current ();
   }
 }
 
@@ -245,9 +247,11 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  thread_current ()->donated_pri = thread_current ()->priority;
   lock->holder = NULL;
   sema_up (&lock->semaphore);
+  struct thread *t = thread_current ();
+  t->donated_pri = t->priority;
+  thread_set_priority (t->priority);
 }
 
 /* Returns true if the current thread holds LOCK, false
