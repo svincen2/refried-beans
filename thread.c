@@ -247,6 +247,17 @@ preempt_if_priority_higher (struct thread *t)
   }
 }
 
+/* Of the thread's two possible priorities, priority and donated_pri,
+   return the highest.
+*/
+int
+thread_get_highest_priority (struct thread *t)
+{
+  if (t->donated_pri > t->priority)
+    return t->donated_pri;
+  return t->priority;
+}
+
 /* Puts the current thread in the sleep_list.
    Sets the initial sleep_ticks for the thread.
 */
@@ -409,8 +420,7 @@ is_highest_priority ()
 int
 thread_get_priority (void) 
 {
-  struct thread *t = thread_current ();
-  return (t->priority > t->donated_pri ? t->priority : t->donated_pri);
+  return thread_get_highest_priority (thread_current ());
 }
 
 /* Sets the current thread's nice value to NICE. */

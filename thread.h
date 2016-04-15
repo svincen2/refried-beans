@@ -143,6 +143,7 @@ void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
+int thread_get_highest_priority (struct thread *);
 bool less_priority (const struct list_elem *,
                     const struct list_elem *,
                     void *) UNUSED;
