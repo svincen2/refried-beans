@@ -241,7 +241,7 @@ thread_create (const char *name, int priority,
 static void 
 preempt_if_priority_higher (struct thread *t)
 {
-  if (t->priority > thread_current ()->priority)
+  if (thread_get_priority () < thread_get_highest_priority (t))
   {
     thread_yield ();
   }
@@ -399,6 +399,7 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
+  thread_current ()->donated_pri = PRI_NONE;
   if (!is_highest_priority ())
   {
     thread_yield ();
@@ -561,7 +562,7 @@ alloc_frame (struct thread *t, size_t size)
   return t->stack;
 }
 
-/* Returns true iff a is greater or equal to b, false otherwise. */
+/* Returns true iff a's priority is less than b's priority. */
 bool less_priority (const struct list_elem *a,
                     const struct list_elem *b,
                     void *aux UNUSED)
@@ -570,7 +571,7 @@ bool less_priority (const struct list_elem *a,
   struct thread *t2 = list_entry (b, struct thread, elem);
   ASSERT (t1 != NULL);
   ASSERT (t2 != NULL);
-  return t1->priority < t2->priority;
+  return thread_get_highest_priority (t1) < thread_get_highest_priority (t2);
 }
 
 /* Chooses and returns the next thread to be scheduled.  Should
