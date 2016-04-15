@@ -414,7 +414,7 @@ is_highest_priority ()
 {
   struct list_elem *e = list_max (&ready_list, less_priority, NULL);
   struct thread *t = list_entry (e, struct thread, elem);
-  return thread_current () == t;
+  return thread_get_priority () >= thread_get_highest_priority (t);
 }
 
 /* Returns the current thread's priority. */
