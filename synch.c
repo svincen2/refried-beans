@@ -250,8 +250,8 @@ lock_release (struct lock *lock)
   lock->holder = NULL;
   sema_up (&lock->semaphore);
   struct thread *t = thread_current ();
-  t->donated_pri = t->priority;
-  thread_set_priority (t->priority);
+  t->donated_pri = PRI_NONE;
+  preempt_if_not_highest_priority ();
 }
 
 /* Returns true if the current thread holds LOCK, false

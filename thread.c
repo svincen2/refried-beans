@@ -247,6 +247,17 @@ preempt_if_priority_higher (struct thread *t)
   }
 }
 
+/* Preempts the currently running thread if a thread
+   in the ready queue has a higher priority.
+*/
+void
+preempt_if_not_highest_priority ()
+{
+  struct list_elem *e = list_max (&ready_list, less_priority, NULL);
+  struct thread *t = list_entry (e, struct thread, elem);
+  preempt_if_priority_higher (t);
+}
+
 /* Of the thread's two possible priorities, priority and donated_pri,
    return the highest.
 */

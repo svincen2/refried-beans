@@ -144,6 +144,7 @@ int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
 
 int thread_get_highest_priority (struct thread *);
+void preempt_if_not_highest_priority (void);
 bool less_priority (const struct list_elem *,
                     const struct list_elem *,
                     void *) UNUSED;
