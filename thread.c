@@ -258,14 +258,17 @@ preempt_if_not_highest_priority ()
   preempt_if_priority_higher (t);
 }
 
-/* Of the thread's two possible priorities, priority and donated_pri,
+/* Of the thread's possible priorities, priority and priority off the prilist,
    return the highest.
 */
 int
 thread_get_highest_priority (struct thread *t)
 {
-  if (t->donated_pri > t->priority)
-    return t->donated_pri;
+  struct list_elem *e = list_max (&prilist , less_priority, NULL);
+  struct thread *d = list_entry (e, struct thread, elem);
+
+  if (d->priority > t->priority)
+    return d->priority;
   return t->priority;
 }
 
@@ -410,7 +413,6 @@ void
 thread_set_priority (int new_priority) 
 {
   thread_current ()->priority = new_priority;
-  thread_current ()->donated_pri = PRI_NONE;
   if (!is_highest_priority ())
   {
     thread_yield ();
@@ -551,8 +553,8 @@ init_thread (struct thread *t, const char *name, int priority)
   t->status = THREAD_BLOCKED;
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
-  list_init (&prilist);
-  list_push_back (&t->donateelem);
+  list_init (&t->prilist);
+  list_push_back (&t->prilist, &t->donateelem);
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
