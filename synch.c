@@ -200,8 +200,6 @@ lock_acquire (struct lock *lock)
   ASSERT (!lock_held_by_current_thread (lock));
 
   want_lock (lock);
-  // sema_down (&lock->semaphore);
-  // lock->holder = thread_current ();
 }
 
 /* If cannot acquire lock donates its priority to the lock holder */
@@ -209,12 +207,23 @@ void
 want_lock (struct lock *lock){
   if (!lock_try_acquire (lock)){
     // Donate the priority to the lock holder
-    lock->holder->donated_pri = thread_get_priority ();
+    donate_priority_if_higher (lock->holder);
     sema_down (&lock->semaphore);
     lock->holder = thread_current ();
   }
 }
 
+/*  If current thread's priority is higher than the lock holder,
+    donate its priority.
+*/
+void
+donate_priority_if_higher (struct thread *t)
+{
+  if (thread_get_priority () > thread_get_highest_priority (t))
+  {
+    t->prilist (thread_current ());
+  }
+}
 
 /* Tries to acquires LOCK and returns true if successful or false
    on failure.  The lock must not already be held by the current
@@ -249,7 +258,7 @@ lock_release (struct lock *lock)
 
   lock->holder = NULL;
   sema_up (&lock->semaphore);
-  t->donated_pri = PRI_NONE;
+  thread_recall_previous_priority ();
   preempt_if_not_highest_priority ();
 }
 
