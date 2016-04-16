@@ -221,7 +221,7 @@ donate_priority_if_higher (struct thread *t)
 {
   if (thread_get_priority () > thread_get_highest_priority (t))
   {
-    list_push_back (&t->prilist, thread_current ()->donateelem);
+    list_push_back (&t->prilist, &thread_current ()->donateelem);
   }
 }
 
