@@ -430,6 +430,15 @@ is_highest_priority ()
   return thread_get_priority () >= thread_get_highest_priority (t);
 }
 
+/* Recall a previous priority. */
+void
+thread_recall_previous_priority ()
+{
+  if (list_size (&thread_current ()->prilist) == 1)
+    return;
+  list_pop_back (&thread_current ()->prilist);
+}
+
 /* Returns the current thread's priority. */
 int
 thread_get_priority (void) 
