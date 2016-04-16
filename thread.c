@@ -264,7 +264,14 @@ preempt_if_not_highest_priority ()
 int
 thread_get_highest_priority (struct thread *t)
 {
-  struct list_elem *e = list_max (&t->prilist , less_priority, NULL);
+  struct list_elem *e = NULL;
+  if (!list_empty (&t->prilist))
+  {
+    e = list_max (&t->prilist , less_priority, NULL);
+  }
+  if (e == NULL)
+    return t->priority;
+
   struct thread *d = list_entry (e, struct thread, elem);
 
   if (d->priority > t->priority)
@@ -432,11 +439,13 @@ is_highest_priority ()
 
 /* Recall a previous priority. */
 void
-thread_recall_previous_priority ()
+thread_recall_previous_priority (struct thread *t)
 {
-  if (list_size (&thread_current ()->prilist) == 1)
+  printf ("In thread recall previous priority\n");
+  if (list_size (&t->prilist) == 1)
     return;
-  list_pop_back (&thread_current ()->prilist);
+  printf ("Still in thread recall prev.\n");
+  list_pop_back (&t->prilist);
 }
 
 /* Returns the current thread's priority. */
@@ -562,8 +571,8 @@ init_thread (struct thread *t, const char *name, int priority)
   t->status = THREAD_BLOCKED;
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
+  t->priority = priority;
   list_init (&t->prilist);
-  list_push_back (&t->prilist, &t->donateelem);
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
@@ -686,6 +695,7 @@ schedule (void)
 static tid_t
 allocate_tid (void) 
 {
+  printf ("In allocate_tid\n");
   static tid_t next_tid = 1;
   tid_t tid;
 

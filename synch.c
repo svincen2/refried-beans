@@ -256,9 +256,12 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
+  if (!list_empty (&lock->holder->prilist))
+  {
+    list_pop_back (&lock->holder->prilist);
+  }
   lock->holder = NULL;
   sema_up (&lock->semaphore);
-  thread_recall_previous_priority ();
   preempt_if_not_highest_priority ();
 }
 
