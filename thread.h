@@ -149,5 +149,5 @@ void preempt_if_not_highest_priority (void);
 bool less_priority (const struct list_elem *,
                     const struct list_elem *,
                     void *) UNUSED;
-void thread_recall_previous_priority ();
+void thread_recall_previous_priority (void);
 #endif /* threads/thread.h */
