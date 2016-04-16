@@ -264,18 +264,8 @@ preempt_if_not_highest_priority ()
 int
 thread_get_highest_priority (struct thread *t)
 {
-  struct list_elem *e = NULL;
-  if (!list_empty (&t->prilist))
-  {
-    e = list_max (&t->prilist , less_priority, NULL);
-  }
-  if (e == NULL)
-    return t->priority;
-
-  struct thread *d = list_entry (e, struct thread, elem);
-
-  if (d->priority > t->priority)
-    return d->priority;
+  if (t->donated_pri > t->priority)
+    return t->donated_pri;
   return t->priority;
 }
 
@@ -441,10 +431,8 @@ is_highest_priority ()
 void
 thread_recall_previous_priority (struct thread *t)
 {
-  printf ("In thread recall previous priority\n");
   if (list_size (&t->prilist) == 1)
     return;
-  printf ("Still in thread recall prev.\n");
   list_pop_back (&t->prilist);
 }
 
@@ -572,7 +560,9 @@ init_thread (struct thread *t, const char *name, int priority)
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
-  list_init (&t->prilist);
+  t->donated_pri = PRI_NONE;
+  t->wanting_lock = NULL;
+  list_init (&t->donate_list);
   t->magic = THREAD_MAGIC;
 
   old_level = intr_disable ();
