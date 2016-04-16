@@ -685,7 +685,6 @@ schedule (void)
 static tid_t
 allocate_tid (void) 
 {
-  printf ("In allocate_tid\n");
   static tid_t next_tid = 1;
   tid_t tid;
 
