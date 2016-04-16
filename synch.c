@@ -209,6 +209,7 @@ void
 want_lock (struct lock *lock){
   if (!lock_try_acquire (lock)){
     // Donate the priority to the lock holder
+    thread_current ()->donee_pri = thread_get_highest_priority (lock->holder);
     lock->holder->donated_pri = thread_get_priority ();
     sema_down (&lock->semaphore);
     lock->holder = thread_current ();
@@ -247,9 +248,9 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  if (!list_empty (&lock->semaphore->waiters))
+  if (!list_empty (&lock->semaphore.waiters))
   {
-    struct list_elem *e = list_max (&lock->semaphore->waiters);
+    struct list_elem *e = list_max (&lock->semaphore.waiters, less_priority, NULL);
     struct thread *t = list_entry (e, struct thread, elem);
     lock->holder->donated_pri = t->donee_pri;
   }
