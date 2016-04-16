@@ -247,9 +247,12 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  struct list_elem *e = list_max (&lock->semaphore->waiters);
-  struct thread *t = list_entry (e, struct thread, elem);
-  lock->holder->donated_pri = t->donee_pri;
+  if (!list_empty (&lock->semaphore->waiters))
+  {
+    struct list_elem *e = list_max (&lock->semaphore->waiters);
+    struct thread *t = list_entry (e, struct thread, elem);
+    lock->holder->donated_pri = t->donee_pri;
+  }
   lock->holder = NULL;
   sema_up (&lock->semaphore);
   preempt_if_not_highest_priority ();
