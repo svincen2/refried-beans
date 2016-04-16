@@ -94,8 +94,6 @@ struct thread
     int sleep_ticks;                    /* Timer ticks remaining until woken up. */
     struct list_elem allelem;           /* List element for all threads list. */
     struct list_elem sleepelem;         /* List element for sleep threads list. */
-    struct list_elem donateelem;        /* List of elements used for priority donation. */
-    struct list prilist;                /* List of the priorities. */
 
     struct list_elem donate_elem;       /* List element for donate list. */
     struct list donate_list;            /* Threads who have donated priority. */

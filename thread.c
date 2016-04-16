@@ -258,8 +258,7 @@ preempt_if_not_highest_priority ()
   preempt_if_priority_higher (t);
 }
 
-/* Of the thread's possible priorities, priority and priority off the prilist,
-   return the highest.
+/* Return the higher of: priority, donated_pri.
 */
 int
 thread_get_highest_priority (struct thread *t)
@@ -425,15 +424,6 @@ is_highest_priority ()
   struct list_elem *e = list_max (&ready_list, less_priority, NULL);
   struct thread *t = list_entry (e, struct thread, elem);
   return thread_get_priority () >= thread_get_highest_priority (t);
-}
-
-/* Recall a previous priority. */
-void
-thread_recall_previous_priority (struct thread *t)
-{
-  if (list_size (&t->prilist) == 1)
-    return;
-  list_pop_back (&t->prilist);
 }
 
 /* Returns the current thread's priority. */

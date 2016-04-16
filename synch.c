@@ -272,7 +272,7 @@ lock_release (struct lock *lock)
     }
     if (!list_empty (&t->donate_list))
     {
-      struct thread *d = list_entry (list_back (&t->donate_list),
+      struct thread *d = list_entry (list_max (&t->donate_list, less_priority, NULL),
                                      struct thread,
                                      donate_elem);
       t->donated_pri = thread_get_highest_priority (d);
