@@ -264,7 +264,7 @@ preempt_if_not_highest_priority ()
 int
 thread_get_highest_priority (struct thread *t)
 {
-  struct list_elem *e = list_max (&prilist , less_priority, NULL);
+  struct list_elem *e = list_max (&t->prilist , less_priority, NULL);
   struct thread *d = list_entry (e, struct thread, elem);
 
   if (d->priority > t->priority)
