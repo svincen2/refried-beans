@@ -76,6 +76,7 @@ sema_down (struct semaphore *sema)
     }
   sema->value--;
   intr_set_level (old_level);
+  
 }
 
 /* Down or "P" operation on a semaphore, but only if the
@@ -116,11 +117,15 @@ sema_up (struct semaphore *sema)
   ASSERT (sema != NULL);
 
   old_level = intr_disable ();
-  if (!list_empty (&sema->waiters)) 
+  if (!list_empty (&sema->waiters))
+  {
+    list_sort (&sema->waiters, less_priority, NULL);
     thread_unblock (list_entry (list_pop_back (&sema->waiters),
                                 struct thread, elem));
+  }
   sema->value++;
   intr_set_level (old_level);
+  thread_yield ();
 }
 
 static void sema_test_helper (void *sema_);
@@ -198,7 +203,9 @@ lock_acquire (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
   ASSERT (!lock_held_by_current_thread (lock));
+  enum intr_level old_level = intr_disable ();
   want_lock (lock);
+  intr_set_level (old_level);
 }
 
 void donate_priority (struct lock *, struct thread *);
@@ -304,7 +311,6 @@ lock_release (struct lock *lock)
   lock->holder = NULL;
   intr_set_level (old_level);
   sema_up (&lock->semaphore);
-  thread_yield ();
 }
 
 /* Returns true if the current thread holds LOCK, false
