@@ -342,9 +342,16 @@ cond_init (struct condition *cond)
   list_init (&cond->waiters);
 }
 
+/* Prototype needed to suppress a warning. */
 bool less_sema_priority (const struct list_elem *,
                          const struct list_elem *,
                          void *) UNUSED;
+
+/* Compare two semaphore list elements.
+   Returns true iff the thread waiting on a's semaphore
+   has a lower priority than that of the thread waiting
+   on b's semaphore.
+*/
 bool less_sema_priority (const struct list_elem *a,
                          const struct list_elem *b,
                          void *aux UNUSED)
@@ -358,6 +365,7 @@ bool less_sema_priority (const struct list_elem *a,
   return thread_get_highest_priority (t1)
          < thread_get_highest_priority (t2);
 }
+
 /* Atomically releases LOCK and waits for COND to be signaled by
    some other piece of code.  After COND is signaled, LOCK is
    reacquired before returning.  LOCK must be held before calling
