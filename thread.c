@@ -474,14 +474,23 @@ thread_get_load_avg (void)
 int32_t
 thread_calc_recent_cpu (struct thread *t)
 {
-  
+  t->recent_cpu = add_fixed_and_int(
+                    mult_fixed_point(
+                      div_fixed_point(
+                        mult_fixed_and_int (load_ave, 2),
+                          add_fixed_and_int (
+                            mult_fixed_and_int (load_ave, 2),
+                            1)),
+                      recent_cpu), t->nice);
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) 
 {
-  return convert_to_int (recent_cpu, 100);
+  return convert_to_int (mult_fixed_and_int(
+                           thread_calc_recent_cpu (thread_current ()),
+                           100));
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -576,6 +585,7 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
 
   t->nice = 0;
+  t->recent_cpu = convert_to_fixed_point (0);
 
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
