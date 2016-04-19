@@ -179,7 +179,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
 
   if (thread_mlfqs)
   {
-
     if (thread_current () != idle_thread)
     {
       thread_current ()->recent_cpu =
@@ -191,6 +190,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
     if (ticks % TIMER_FREQ == 0)
     {
+      thread_calc_load_ave ();
       thread_calc_recent_cpu (thread_current ());
     }
   }
