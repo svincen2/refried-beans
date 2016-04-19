@@ -71,4 +71,9 @@ int32_t div_fixed_point (int32_t fp1, int32_t fp2)
   (int32_t) ((int64_t) fp1) * F / fp2;
 }
 
+int sub_int_and_fixed (int i, int32_t fp)
+{
+  int32_t ifp = convert_to_fixed_point (i);
+  return convert_to_int (sub_fixed_point (i, fp));
+}
 #endif

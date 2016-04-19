@@ -244,6 +244,8 @@ thread_create (const char *name, int priority,
 static void 
 preempt_if_priority_higher (struct thread *t)
 {
+  if (thread_mlfqs)
+    return;
   if (thread_get_priority () < thread_get_highest_priority (t))
   {
     thread_yield ();
@@ -411,6 +413,8 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
+  if (thread_mlfqs)
+    return;
   thread_current ()->priority = new_priority;
   if (!is_highest_priority ())
   {
@@ -433,6 +437,8 @@ is_highest_priority ()
 int
 thread_get_priority (void) 
 {
+  if (thread_mlfqs)
+    return;
   return thread_get_highest_priority (thread_current ());
 }
 
