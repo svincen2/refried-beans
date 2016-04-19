@@ -179,7 +179,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
 
   if (thread_mlfqs)
   {
-    if (thread_current () != idle_thread)
+    if (thread_current () != get_idle_thread ())
     {
       thread_current ()->recent_cpu =
         add_fixed_and_int (thread_current ()->recent_cpu, 1);
