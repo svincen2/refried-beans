@@ -62,6 +62,7 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
+static int load_ave;
 
 static void kernel_thread (thread_func *, void *aux);
 
@@ -106,6 +107,8 @@ thread_init (void)
   init_thread (initial_thread, "main", PRI_DEFAULT);
   initial_thread->status = THREAD_RUNNING;
   initial_thread->tid = allocate_tid ();
+
+  load_ave = 0;
 }
 
 /* Starts preemptive thread scheduling by enabling interrupts.
@@ -435,33 +438,50 @@ thread_get_priority (void)
 
 /* Sets the current thread's nice value to NICE. */
 void
-thread_set_nice (int nice UNUSED) 
+thread_set_nice (int nice) 
 {
-  /* Not yet implemented. */
+  thread_current ()->nice = nice;
+  thread_current ()->priority = 
+    convert_to_int (
+      sub_int_and_fixed (PRI_MAX,
+                         sub_fixed_and_int(
+                           div_fixed_and_int(recent_cpu, 4),
+                           nice * 2));
+  preempt_if_not_highest ();
 }
 
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  return thread_current ()->nice;
 }
 
 /* Returns 100 times the system load average. */
 int
 thread_get_load_avg (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  int32_t ratio1 = convert_to_fixed_point (59)
+                   / convert_to_fixed_point (60);
+  int32_t ratio2 = convert_to_fixed_point (1)
+                   / convert_to_fixed_point (60);
+  load_ave = add_fixed_point (mult_fixed_and_int (ratio1, load_ave),
+                              mult_fixed_and_int (ratio2,
+                                                  list_size (&ready_list) + 1));
+  return convert_to_int (mult_fixed_and_int (load_ave, 100));
+}
+
+int32_t
+thread_calc_recent_cpu (struct thread *t)
+{
+  
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void) 
 {
-  /* Not yet implemented. */
-  return 0;
+  return convert_to_int (recent_cpu, 100);
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -554,6 +574,8 @@ init_thread (struct thread *t, const char *name, int priority)
   t->wanting_lock = NULL;
   list_init (&t->donate_list);
   t->magic = THREAD_MAGIC;
+
+  t->nice = 0;
 
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
