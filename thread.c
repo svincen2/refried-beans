@@ -494,9 +494,9 @@ mlfqs_recalc_load()
 
   int number_of_threads = list_size (&ready_list);
 
-  if(!(thread_current == idle_thread))
+  if(!(thread_current () == idle_thread))
   {
-    int number_of_threads = list_size (&ready_list) + 1;
+    number_of_threads = list_size (&ready_list) + 1;
   }
 
   int32_t ratio1 = convert_to_fixed_point (59)
