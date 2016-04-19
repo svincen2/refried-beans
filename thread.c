@@ -458,6 +458,17 @@ thread_set_nice (int nice)
   preempt_if_not_highest_priority ();
 }
 
+void
+mlfqs_recalc_priority(struct thread *t)
+{
+  thread_current ()->priority =
+     convert_to_int (
+       sub_int_and_fixed (PRI_MAX,
+                          sub_fixed_and_int(
+                            div_fixed_and_int(t->recent_cpu, 4),
+                            t->nice * 2)));
+}
+
 /* Returns the current thread's nice value. */
 int
 thread_get_nice (void) 
