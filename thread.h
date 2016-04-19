@@ -90,6 +90,8 @@ struct thread
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
     int donated_pri;                    /* Donated priority. */
+    int nice				/* Threads niceness*/
+    int32_t recent_cpu                  /* recent cpu time each thread has recieved*/
     struct lock *wanting_lock;          /* Lock this thread wants. */
     int sleep_ticks;                    /* Timer ticks remaining until woken up. */
     struct list_elem allelem;           /* List element for all threads list. */
