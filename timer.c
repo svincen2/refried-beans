@@ -190,7 +190,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
     }
     if (ticks % TIMER_FREQ == 0)
     {
-      thread_calc_load_ave ();
+      mlfqs_recalc_load ();
       thread_calc_recent_cpu (thread_current ());
     }
   }
