@@ -11,6 +11,7 @@
 #include "threads/switch.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
+#include "threads/fixed_point.h"
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -438,7 +439,7 @@ int
 thread_get_priority (void) 
 {
   if (thread_mlfqs)
-    return;
+    return thread_current ()->priority;
   return thread_get_highest_priority (thread_current ());
 }
 
@@ -446,14 +447,15 @@ thread_get_priority (void)
 void
 thread_set_nice (int nice) 
 {
+  struct thread *t = thread_current ();
   thread_current ()->nice = nice;
   thread_current ()->priority = 
     convert_to_int (
       sub_int_and_fixed (PRI_MAX,
                          sub_fixed_and_int(
-                           div_fixed_and_int(recent_cpu, 4),
-                           nice * 2));
-  preempt_if_not_highest ();
+                           div_fixed_and_int(t->recent_cpu, 4),
+                           nice * 2)));
+  preempt_if_not_highest_priority ();
 }
 
 /* Returns the current thread's nice value. */
@@ -476,7 +478,7 @@ thread_get_load_avg (void)
                                                   list_size (&ready_list) + 1));
   return convert_to_int (mult_fixed_and_int (load_ave, 100));
 }
-
+int32_t thread_calc_recent_cpu(struct thread *);
 int32_t
 thread_calc_recent_cpu (struct thread *t)
 {
@@ -487,7 +489,8 @@ thread_calc_recent_cpu (struct thread *t)
                           add_fixed_and_int (
                             mult_fixed_and_int (load_ave, 2),
                             1)),
-                      recent_cpu), t->nice);
+                      t->recent_cpu), t->nice);
+  return t->recent_cpu;
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
