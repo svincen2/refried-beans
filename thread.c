@@ -478,7 +478,7 @@ thread_get_load_avg (void)
                                                   list_size (&ready_list) + 1));
   return convert_to_int (mult_fixed_and_int (load_ave, 100));
 }
-int32_t thread_calc_recent_cpu(struct thread *);
+
 int32_t
 thread_calc_recent_cpu (struct thread *t)
 {

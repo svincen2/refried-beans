@@ -216,7 +216,8 @@ want_lock (struct lock *lock){
   if (!lock_try_acquire (lock))
   {
     // Donate the priority to the lock holder
-    donate_priority (lock, thread_current());
+    if (!thread_mlfqs)
+      donate_priority (lock, thread_current());
     sema_down (&lock->semaphore);
     lock->holder = thread_current ();
   }
@@ -284,7 +285,7 @@ lock_release (struct lock *lock)
   struct thread *t = lock->holder;
 
   // Threads are waiting for this lock.
-  if (!list_empty (&lock->semaphore.waiters))
+  if (!list_empty (&lock->semaphore.waiters) && !thread_mlfqs)
   {
     // Remove all donated priorities who are waiting on this lock
     // from donate_list.
