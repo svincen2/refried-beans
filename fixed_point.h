@@ -34,7 +34,7 @@ int convert_to_int (int32_t fp)
   if (sign_of (fp) == 0)
     return (fp + F2) / F;
   else
-    return (fp - F2) - F;
+    return (fp - F2) / F;
 }
 
 /** Return the sign of the fixed-point number.
