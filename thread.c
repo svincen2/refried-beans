@@ -80,6 +80,11 @@ static tid_t allocate_tid (void);
 static void preempt_if_priority_higher (struct thread *);
 static bool is_highest_priority (void);
 
+struct thread * get_idle_thread ()
+{
+  return idle_thread;
+}
+
 /* Initializes the threading system by transforming the code
    that's currently running into a thread.  This can't work in
    general and it is possible in this case only because loader.S
