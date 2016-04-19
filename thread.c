@@ -480,6 +480,12 @@ thread_get_nice (void)
 int
 thread_get_load_avg (void) 
 {
+  return convert_to_int (mult_fixed_and_int (load_ave, 100));
+}
+
+void
+mlfqs_recalc_load()
+{
   int32_t ratio1 = convert_to_fixed_point (59)
                    / convert_to_fixed_point (60);
   int32_t ratio2 = convert_to_fixed_point (1)
@@ -487,7 +493,6 @@ thread_get_load_avg (void)
   load_ave = add_fixed_point (mult_fixed_and_int (ratio1, load_ave),
                               mult_fixed_and_int (ratio2,
                                                   list_size (&ready_list) + 1));
-  return convert_to_int (mult_fixed_and_int (load_ave, 100));
 }
 
 int32_t
