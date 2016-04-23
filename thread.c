@@ -487,6 +487,8 @@ int
 thread_get_load_avg (void) 
 {
   return convert_to_int (mult_fixed_and_int (load_ave, 100));
+  //return convert_to_int (load_ave);
+  //return mult_fixed_and_int (load_ave, 100);
 }
 
 void
@@ -500,11 +502,11 @@ mlfqs_recalc_load()
     number_of_threads = list_size (&ready_list) + 1;
   }
 
-  int32_t ratio1 = convert_to_fixed_point (59)
-                   / convert_to_fixed_point (60);
-  int32_t ratio2 = convert_to_fixed_point (1)
-                   / convert_to_fixed_point (60);
-  load_ave = add_fixed_point (mult_fixed_and_int (ratio1, load_ave),
+  int32_t ratio1 = div_fixed_point(convert_to_fixed_point (59),
+                                   convert_to_fixed_point (60));
+  int32_t ratio2 = div_fixed_point(convert_to_fixed_point (1),
+                                   convert_to_fixed_point (60));
+  load_ave = add_fixed_point (mult_fixed_point (ratio1, load_ave),
                               mult_fixed_and_int (ratio2,
                                                   number_of_threads));
 }
@@ -519,8 +521,20 @@ thread_calc_recent_cpu (struct thread *t)
                           add_fixed_and_int (
                             mult_fixed_and_int (load_ave, 2),
                             1)),
-                      t->recent_cpu), t->nice);
+                      t->recent_cpu),
+                    t->nice);
   return t->recent_cpu;
+}
+
+void
+recalc_all_thread_recent_cpu ()
+{
+  struct list_elem *e;
+  for (e = list_begin (&all_list); e != list_end (&all_list)
+       ; e = list_next (e))
+  {
+    thread_calc_recent_cpu (list_entry (e, struct thread, elem));
+  }
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */

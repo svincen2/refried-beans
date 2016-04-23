@@ -188,9 +188,10 @@ timer_interrupt (struct intr_frame *args UNUSED)
     {
       mlfqs_recalc_priority (thread_current ());
     }
-    if (ticks % TIMER_FREQ == 0)
+    if (ticks % 100 == 0)
     {
       mlfqs_recalc_load ();
+      recalc_all_thread_recent_cpu ();
       thread_calc_recent_cpu (thread_current ());
     }
   }

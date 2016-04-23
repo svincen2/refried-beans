@@ -158,7 +158,9 @@ bool less_priority (const struct list_elem *,
 void thread_recall_previous_priority (struct thread *);
 
 int32_t thread_calc_recent_cpu (struct thread *);
+void recalc_all_thread_recent_cpu (void);
 void mlfqs_recalc_priority (struct thread *);
 void mlfqs_recalc_load(void);
 struct thread* get_idle_thread (void);
+
 #endif /* threads/thread.h */
