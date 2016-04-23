@@ -192,7 +192,6 @@ timer_interrupt (struct intr_frame *args UNUSED)
     {
       mlfqs_recalc_load ();
       recalc_all_thread_recent_cpu ();
-      thread_calc_recent_cpu (thread_current ());
     }
   }
 }
