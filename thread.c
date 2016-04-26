@@ -241,7 +241,8 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
-  preempt_if_priority_higher (t);
+  if (!thread_mlfqs)
+    preempt_if_priority_higher (t);
   return tid;
 }
 
@@ -251,11 +252,12 @@ thread_create (const char *name, int priority,
 static void 
 preempt_if_priority_higher (struct thread *t)
 {
-  if (thread_mlfqs)
-    return;
   if (thread_get_priority () < thread_get_highest_priority (t))
   {
-    thread_yield ();
+    if (intr_context ())
+      intr_yield_on_return ();
+    else
+      thread_yield ();
   }
 }
 
@@ -265,9 +267,11 @@ preempt_if_priority_higher (struct thread *t)
 void
 preempt_if_not_highest_priority ()
 {
+  enum intr_level old_level = intr_disable ();
   struct list_elem *e = list_max (&ready_list, less_priority, NULL);
   struct thread *t = list_entry (e, struct thread, elem);
   preempt_if_priority_higher (t);
+  intr_set_level (old_level);
 }
 
 /* Return the higher of: priority, donated_pri.
@@ -275,6 +279,7 @@ preempt_if_not_highest_priority ()
 int
 thread_get_highest_priority (struct thread *t)
 {
+  if (thread_mlfqs) return t->priority;
   if (t->donated_pri > t->priority)
     return t->donated_pri;
   return t->priority;
@@ -461,13 +466,13 @@ thread_set_nice (int nice)
                          sub_fixed_and_int(
                            div_fixed_and_int(t->recent_cpu, 4),
                            nice * 2)));
-  preempt_if_not_highest_priority ();
+  thread_yield ();
 }
 
 void
 mlfqs_recalc_priority(struct thread *t)
 {
-  thread_current ()->priority =
+  t->priority =
      convert_to_int (
        sub_int_and_fixed (PRI_MAX,
                           sub_fixed_and_int(
@@ -494,7 +499,6 @@ thread_get_load_avg (void)
 void
 mlfqs_recalc_load()
 {
-
   int number_of_threads = list_size (&ready_list);
 
   if(!(thread_current () == idle_thread))
@@ -631,14 +635,24 @@ init_thread (struct thread *t, const char *name, int priority)
   t->status = THREAD_BLOCKED;
   strlcpy (t->name, name, sizeof t->name);
   t->stack = (uint8_t *) t + PGSIZE;
-  t->priority = priority;
-  t->donated_pri = PRI_NONE;
+
+  if (!thread_mlfqs)
+  {
+    t->priority = priority;
+    t->donated_pri = PRI_NONE;
+  }
   t->wanting_lock = NULL;
   list_init (&t->donate_list);
   t->magic = THREAD_MAGIC;
 
-  t->nice = 0;
-  t->recent_cpu = convert_to_fixed_point (0);
+  if (thread_mlfqs)
+  {
+    t->priority = PRI_MIN;
+    t->donated_pri = PRI_MIN;
+    t->recent_cpu = convert_to_fixed_point (0);
+    t->nice = 0;
+    mlfqs_recalc_priority (t);
+  }
 
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);

@@ -285,29 +285,32 @@ lock_release (struct lock *lock)
   struct thread *t = lock->holder;
 
   // Threads are waiting for this lock.
-  if (!list_empty (&lock->semaphore.waiters) && !thread_mlfqs)
+  if (!list_empty (&lock->semaphore.waiters))
   {
-    // Remove all donated priorities who are waiting on this lock
-    // from donate_list.
-    struct list_elem *e;
-    for (e = list_begin (&t->donate_list); e != list_end (&t->donate_list);
-         e = list_next (e))
+    if (!thread_mlfqs)
     {
-      struct thread *d = list_entry (e, struct thread, donate_elem);
-      if (d->wanting_lock == lock)
-        list_remove (e);
+      // Remove all donated priorities who are waiting on this lock
+      // from donate_list.
+      struct list_elem *e;
+      for (e = list_begin (&t->donate_list); e != list_end (&t->donate_list);
+           e = list_next (e))
+      {
+        struct thread *d = list_entry (e, struct thread, donate_elem);
+        if (d->wanting_lock == lock)
+          list_remove (e);
+      }
+      // Still donated priorities, set highest donated priority.
+      if (!list_empty (&t->donate_list))
+      {
+        struct thread *d = list_entry (list_max (&t->donate_list, less_priority, NULL),
+                                       struct thread,
+                                       donate_elem);
+        t->donated_pri = thread_get_highest_priority (d);
+      }
+      // No donated priorities left, set to no priority.
+      else
+        t->donated_pri = PRI_NONE;
     }
-    // Still donated priorities, set highest donated priority.
-    if (!list_empty (&t->donate_list))
-    {
-      struct thread *d = list_entry (list_max (&t->donate_list, less_priority, NULL),
-                                     struct thread,
-                                     donate_elem);
-      t->donated_pri = thread_get_highest_priority (d);
-    }
-    // No donated priorities left, set to no priority.
-    else
-      t->donated_pri = PRI_NONE;
   }
   lock->holder = NULL;
   intr_set_level (old_level);
