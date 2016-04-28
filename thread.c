@@ -241,8 +241,7 @@ thread_create (const char *name, int priority,
   /* Add to run queue. */
   thread_unblock (t);
 
-  if (!thread_mlfqs)
-    preempt_if_priority_higher (t);
+  preempt_if_priority_higher (t);
   return tid;
 }
 
@@ -425,12 +424,11 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority) 
 {
-  if (thread_mlfqs)
-    return;
+  if (!thread_mlfqs)
   thread_current ()->priority = new_priority;
   if (!is_highest_priority ())
   {
-    thread_yield ();
+    preempt_if_not_highest_priority ();
   }
 }
 
