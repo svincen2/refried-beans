@@ -181,14 +181,14 @@ timer_interrupt (struct intr_frame *args UNUSED)
   {
     if (thread_current () != get_idle_thread ())
     {
-      thread_current ()->recent_cpu =
-        add_fixed_and_int (thread_current ()->recent_cpu, 1);
+      thread_current ()->recent_cpu += 1;
+//        add_fixed_and_int (thread_current ()->recent_cpu, 1);
     }
     if (ticks % 4 == 0)
     {
       mlfqs_recalc_priority (thread_current ());
     }
-    if (ticks % 25 == 0)
+    if (ticks % TIMER_FREQ == 0)
     {
       mlfqs_recalc_load ();
       recalc_all_thread_recent_cpu ();
